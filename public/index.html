@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador de Pokémon</title>
+    <style>
+@import url('https://fonts.cdnfonts.com/css/pokemon-solid');
+
+body {
+    font-family: 'Pokemon Solid', sans-serif;
+    letter-spacing: 2px;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    background-image: url('https://i.pinimg.com/originals/06/5e/5e/065e5e9239f7d492dc3d64e57e84d6ed.jpg');
+    background-repeat: repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+#titulo {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#titulo img {
+    max-width: 300px;
+    height: auto;
+}
+
+#loadingContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#pokemonForm,
+#tipoForm,
+#pokemonData {
+    background-color: white; /* Fondo blanco para cada formulario y contenedor de datos */
+    margin-left: 3%;
+    margin-right: 5%; /* Espaciado alrededor de cada formulario y contenedor de datos */
+    padding: 20px; /* Relleno interno para espacio adicional dentro del formulario y contenedor de datos */
+    width: 90%;
+    text-align: center;
+}
+
+/* Estilos para el formulario de búsqueda por nombre o número */
+#pokemonForm label,
+#pokemonForm input[type="text"],
+#pokemonForm button {
+    margin: 5px;
+}
+
+/* Estilos para el formulario de búsqueda por tipo */
+#tipoForm label {
+    margin-right: 10px;
+}
+
+/* Estilos para el contenedor de datos de Pokémon */
+#pokemonData {
+    margin-top: 20px; /* Aumentar el espacio entre el formulario de búsqueda y los resultados */
+}
+
+#pokemonData p {
+    height: auto;
+    text-align: center;
+    margin: 10px; /* Espaciado entre los datos */
+    display: block;
+}
+
+#pokemonData img {
+    width: 250px; /* Aumentar el tamaño del sprite a 400px */
+    height: auto;
+    margin: 20px auto; /* Centrar la imagen y agregar espacio entre la imagen y los datos */
+    display: block; /* Asegurar que la imagen se centre correctamente */
+}
+
+/* Estilos para los botones de opción del formulario de búsqueda por tipo */
+input[type="radio"] {
+    display: none;
+}
+
+input[type="radio"] + label {
+    display: inline-block;
+    padding: 8px 15px;
+    margin: 5px;
+    background-color: #000000;
+    color: #fff;
+    cursor: pointer;
+}
+
+input[type="radio"]:checked + label {
+    background-color: #2980b9;
+}
+
+button[type="submit"], button[type="button"] {
+    padding: 8px 15px;
+    background-color: #2980b9;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+    color: #ffcc00;
+    font-size: 14px;
+    font-family: 'Pokemon Solid', sans-serif;
+    letter-spacing: 2px;
+    border-radius: 5%;
+}
+
+/* Estilos para la sección de errores */
+#errorMessage {
+    text-align: center;
+    margin: 20px auto;
+    color: #e74c3c;
+}
+
+
+    </style>
+    
+    <!-- Incluye jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <div id="titulo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/1280px-International_Pok%C3%A9mon_logo.svg.png" alt="Pokemon">
+    </div>
+
+    <div id="loadingContainer">
+        <img id="loadingSpinner" src="https://media.tenor.com/fSsxftCb8w0AAAAi/pikachu-running.gif" alt="Cargando...">
+    </div>
+
+    <form id="pokemonForm">
+        <label for="pokemonInput">Buscar por nombre o número:</label>
+        <input type="text" id="pokemonInput" name="pokemonInput">
+        <button type="submit">Buscar</button>
+    </form>
+
+     <!-- Formulario para buscar por tipo -->
+     <form id="tipoForm">
+        <label>Selecciona un tipo:</label>
+        <div>
+            <!-- Botones de opción para cada tipo -->
+            <input type="radio" id="tipoNormal" name="tipo" value="normal">
+            <label for="tipoNormal">Normal</label>
+
+            <input type="radio" id="tipoLucha" name="tipo" value="fighting">
+            <label for="tipoLucha">Lucha</label>
+
+            <input type="radio" id="tipoVolador" name="tipo" value="flying">
+            <label for="tipoVolador">Volador</label>
+            
+            <input type="radio" id="tipoVeneno" name="tipo" value="poison">
+            <label for="tipoVeneno">Veneno</label>
+
+            <input type="radio" id="tipoTierra" name="tipo" value="ground">
+            <label for="tipoTierra">tierra</label>
+
+            <input type="radio" id="tipoRoca" name="tipo" value="rock">
+            <label for="tipoRoca">Roca</label>
+
+            <input type="radio" id="tipoBicho" name="tipo" value="bug">
+            <label for="tipoBicho">Bicho</label>
+
+            <input type="radio" id="tipoFantasma" name="tipo" value="ghost">
+            <label for="tipoFantasma">Fantasma</label>
+
+            <input type="radio" id="tipoAcero" name="tipo" value="steel">
+            <label for="tipoAcero">Acero</label>
+
+            <input type="radio" id="tipoFuego" name="tipo" value="fire">
+            <label for="tipoFuego">Fuego</label>
+
+            <input type="radio" id="tipoAgua" name="tipo" value="water">
+            <label for="tipoAgua">Agua</label>
+
+            <input type="radio" id="tipoPlanta" name="tipo" value="grass">
+            <label for="tipoPlanta">Planta</label>
+
+            <input type="radio" id="tipoElectrico" name="tipo" value="electric">
+            <label for="tipoElectrico">Electrico</label>
+
+            <input type="radio" id="tipoPsiquico" name="tipo" value="psychic">
+            <label for="tipoPsiquico">Psíquico</label>
+
+            <input type="radio" id="tipoHielo" name="tipo" value="ice">
+            <label for="tipoHielo">Hielo</label>
+
+            <input type="radio" id="tipoDragon" name="tipo" value="dragon">
+            <label for="tipoDragon">Dragón</label>
+
+            <input type="radio" id="tipoSiniestro" name="tipo" value="dark">
+            <label for="tipoSiniestro">Siniestro</label>
+
+            <input type="radio" id="tipoHada" name="tipo" value="fairy">
+            <label for="tipoHada">Hada</label>
+
+            <button type="button" onclick="buscarPorTipo()">Buscar por Tipo</button>
+        </div>
+    </form>
+
+    <div id="pokemonData"></div>
+
+    <script>
+
+        function buscarPorTipo() {
+            // Obtener el tipo seleccionado
+            const tipoSeleccionado = $('input[name="tipo"]:checked').val();
+            
+            // Ocultar formularios y resultados al inicio
+            $('#pokemonForm, #tipoForm, #pokemonData').hide();
+
+            // Mostrar gif de carga
+            $('#loadingContainer').show();
+
+            // Realizar la solicitud al servidor para obtener Pokémon por tipo
+            $.ajax({
+                type: 'GET',
+                url: `/obtenerPokemonPorTipo/${tipoSeleccionado}`,
+                contentType: 'application/json',
+                success: function (data) {
+                // Ocultar gif de carga
+                $('#loadingContainer').hide();
+
+                // Mostrar formularios y resultados
+                $('#pokemonForm, #tipoForm, #pokemonData').show();
+                    // Verificar si la respuesta contiene la propiedad esperada
+                    if (data && data.pokemonPorTipo && Array.isArray(data.pokemonPorTipo)) {
+                        // Actualizar el DOM con los datos de los Pokémon por tipo
+                        mostrarDatosPorTipo(data.pokemonPorTipo);
+                    } else {
+                        console.error('Respuesta inesperada al obtener Pokémon por tipo:', data);
+                        mostrarError('Error al obtener datos de la PokeAPI');
+                    }
+                },
+                error: function (error) {
+                    // Ocultar gif de carga
+                $('#loadingContainer').hide();
+
+                    // Mostrar formularios y resultados
+                $('#pokemonForm, #tipoForm, #pokemonData').show();
+                    console.error('Error al obtener datos de la PokeAPI:', error.responseJSON.error);
+                    mostrarError('Error al obtener datos de la PokeAPI');
+                }
+            });
+        }
+    
+        function mostrarDatosPorTipo(data) {
+            const pokemonDataDiv = $('#pokemonData');
+            pokemonDataDiv.empty(); // Limpiar contenido anterior
+    
+            if (data.length > 0) {
+                // Iterar sobre los datos de los Pokémon por tipo y mostrarlos en el DOM
+                data.forEach(pokemon => {
+                    // Verificar si hay datos y propiedades importantes
+                    if (pokemon && pokemon.numero && pokemon.sprite) {
+                        // Mostrar ID del Pokémon
+                        pokemonDataDiv.append(`<p><strong>Número:</strong> ${pokemon.numero}</p>`);
+    
+                        // Mostrar nombre del Pokémon (usar el nombre si está disponible)
+                        const nombre = pokemon.nombre ? pokemon.nombre : 'Desconocido';
+                        pokemonDataDiv.append(`<p><strong>Nombre:</strong> ${nombre}</p>`);
+    
+                        // Mostrar sprite del Pokémon
+                        pokemonDataDiv.append(`<img src="${pokemon.sprite}" alt="${nombre}">`);
+                    } else {
+                        // Mostrar mensaje de que no se encontraron datos importantes
+                        pokemonDataDiv.append('<p>No se encontraron datos importantes del Pokémon.</p>');
+                    }
+                });
+            } else {
+                // Mostrar mensaje si no hay Pokémon del tipo especificado
+                pokemonDataDiv.append('<p>No hay Pokémon del tipo especificado.</p>');
+            }
+        }
+    
+        function mostrarError(mensaje) {
+            const pokemonDataDiv = $('#pokemonData');
+            pokemonDataDiv.empty(); // Limpiar contenido anterior
+            pokemonDataDiv.append(`<p>${mensaje}</p>`);
+        }
+    
+
+    $(document).ready(function () {
+        // Ocultar formularios y resultados al inicio
+        $('#pokemonForm, #tipoForm, #pokemonData').hide();
+
+        // Mostrar gif de carga
+        $('#loadingContainer').show();
+
+        // Realizar la solicitud a la ruta obtenerDatosPokeAPI al cargar la página
+        $.ajax({
+            type: 'GET',
+            url: '/obtenerDatosPokeAPI',
+            contentType: 'application/json',
+            success: function (data) {
+                
+                // Ocultar gif de carga
+                $('#loadingContainer').hide();
+
+                // Mostrar formularios y resultados
+                $('#pokemonForm, #tipoForm, #pokemonData').show();
+
+                // Actualizar el DOM con los datos de la PokeAPI
+                mostrarDatosPokeAPI(data);
+            },
+            error: function (error) {
+                // Ocultar gif de carga
+                $('#loadingContainer').hide();
+
+                // Mostrar formularios y resultados
+                $('#pokemonForm, #tipoForm, #pokemonData').show();
+                console.error('Error al obtener datos de la PokeAPI:', error.responseJSON.error);
+            }
+        });
+
+        // Capturar el evento de envío del formulario
+        $('#pokemonForm').submit(function (event) {
+            
+            // Ocultar formularios y resultados al inicio
+            $('#pokemonForm, #tipoForm, #pokemonData').hide();
+
+            // Mostrar gif de carga
+            $('#loadingContainer').show();
+
+            
+            // Evitar que se realice el envío del formulario normal
+            event.preventDefault();
+
+            // Obtener el valor del input y convertir a minúsculas
+            const valor = $('#pokemonInput').val().toLowerCase();
+
+            if (!valor) {
+                // Si el campo está vacío, dirigirse a la ruta obtenerDatosPokeAPI
+                $.ajax({
+                    type: 'GET',
+                    url: '/obtenerDatosPokeAPI',
+                    contentType: 'application/json',
+                    success: function (data) {
+                        // Ocultar gif de carga
+                        $('#loadingContainer').hide();
+
+                        // Mostrar formularios y resultados
+                        $('#pokemonForm, #tipoForm, #pokemonData').show();
+
+                        // Actualizar el DOM con los datos de la PokeAPI
+                        mostrarDatosPokeAPI(data);
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener datos de la PokeAPI:', error.responseJSON.error);
+                    }
+                });
+            } else {
+                // Si hay un valor, realizar la solicitud al servidor normalmente
+                $.ajax({
+                    type: 'GET',
+                    url: '/obtenerDatosPokemon',
+                    contentType: 'application/json',
+                    data: { valor: valor },
+                    success: function (data) {
+                        // Ocultar gif de carga
+                        $('#loadingContainer').hide();
+
+                        // Mostrar formularios y resultados
+                        $('#pokemonForm, #tipoForm, #pokemonData').show();
+
+                        // Actualizar el DOM con los datos del Pokémon
+                        mostrarDatosPokemon(data, valor);
+                    },
+                    error: function (error) {
+                        console.error('Error al obtener datos del Pokémon:', error.responseJSON.error);
+                        // Mostrar mensaje de que no se encontró el Pokémon
+                        mostrarMensajeNoEncontrado(valor);
+                    }
+                });
+            }
+        });
+
+        function mostrarDatosPokeAPI(data) {
+            const pokemonDataDiv = $('#pokemonData');
+            pokemonDataDiv.empty(); // Limpiar contenido anterior
+
+            // Verificar si los datos son un array
+            if (Array.isArray(data)) {
+                // Iterar sobre los datos de la PokeAPI y mostrarlos en el DOM
+                data.forEach(pokemon => {
+                    // Verificar si hay datos y propiedades importantes
+                    if (pokemon && pokemon.detalles && pokemon.detalles.id && pokemon.detalles.sprites && pokemon.detalles.sprites.front_default) {
+                        // Mostrar ID del Pokémon
+                        pokemonDataDiv.append(`<p><strong>Número:</strong> ${pokemon.detalles.id}</p>`);
+
+                        // Mostrar nombre del Pokémon (asegúrate de que los datos contengan la información del nombre)
+                        const nombre = pokemon.nombre ? pokemon.nombre : 'Desconocido';
+                        pokemonDataDiv.append(`<p><strong>Nombre:</strong> ${nombre}</p>`);
+
+                        // Mostrar tipos del Pokémon
+                        const tipos = pokemon.detalles.types && Array.isArray(pokemon.detalles.types) && pokemon.detalles.types.length > 0
+                            ? pokemon.detalles.types.map(tipo => traducirTipo(tipo.type.name)).join(', ')
+                            : 'No se encontraron tipos';
+
+                        pokemonDataDiv.append(`<p><strong>Tipos:</strong> ${tipos}</p>`);
+
+                        // Mostrar sprite del Pokémon
+                        pokemonDataDiv.append(`<img src="${pokemon.detalles.sprites.front_default}" alt="${nombre}">`);
+                    } else {
+                        // Mostrar mensaje de que no se encontraron datos importantes
+                        pokemonDataDiv.append('<p>No se encontraron datos importantes del Pokémon.</p>');
+                    }
+                });
+            } else {
+                // Mostrar mensaje si los datos no son un array
+                pokemonDataDiv.append('<p>No se encontraron datos de la PokeAPI.</p>');
+            }
+        }
+
+        function traducirTipo(tipo) {
+            // Función para traducir el nombre del tipo a español (puedes personalizar según sea necesario)
+            switch (tipo) {
+                case 'normal': return 'normal';
+                case 'fighting': return 'lucha';
+                case 'flying': return 'volador';
+                case 'poison': return 'veneno';
+                case 'ground': return 'tierra';
+                case 'rock': return 'roca';
+                case 'bug': return 'bicho';
+                case 'ghost': return 'fantasma';
+                case 'steel': return 'acero';
+                case 'fire': return 'fuego';
+                case 'water': return 'agua';
+                case 'grass': return 'planta';
+                case 'electric': return 'eléctrico';
+                case 'psychic': return 'psíquico';
+                case 'ice': return 'hielo';
+                case 'dragon': return 'dragón';
+                case 'dark': return 'siniestro';
+                case 'fairy': return 'hada';
+                default: return tipo;
+            }
+        }
+
+        function mostrarDatosPokemon(data, valor) {
+            const pokemonDataDiv = $('#pokemonData');
+            pokemonDataDiv.empty(); // Limpiar contenido anterior
+
+            // Verificar si se encontró el Pokémon
+            if (data && data.id && data.name && data.types && data.types.length > 0 && data.sprites && data.sprites.front_default) {
+                // Mostrar número del Pokémon
+                pokemonDataDiv.append(`<p><strong>Número:</strong> ${data.id}</p>`);
+
+                // Mostrar nombre del Pokémon
+                pokemonDataDiv.append(`<p><strong>Nombre:</strong> ${data.name}</p>`);
+
+                // Mostrar tipos del Pokémon
+                const tipos = data.types.map(tipo => traducirTipo(tipo.type.name)).join(', ');
+                pokemonDataDiv.append(`<p><strong>Tipos:</strong> ${tipos}</p>`);
+
+                // Convertir altura a metros
+                const alturaMetros = data.height / 10; // 1 decímetro = 0.1 metro
+                pokemonDataDiv.append(`<p><strong>Altura:</strong> ${alturaMetros} metros</p>`);
+
+                // Convertir peso a kilogramos
+                const pesoKilogramos = data.weight / 10; // 1 hectogramo = 0.1 kilogramo
+                pokemonDataDiv.append(`<p><strong>Peso:</strong> ${pesoKilogramos} kilogramos</p>`);
+
+                // Mostrar imagen del Pokémon
+                pokemonDataDiv.append(`<img src="${data.sprites.front_default}" alt="${data.name}">`);
+            } else {
+                // Ocultar gif de carga
+                $('#loadingContainer').hide();
+
+                // Mostrar formularios y resultados
+                $('#pokemonForm, #tipoForm, #pokemonData').show();
+                // Mostrar mensaje de que no se encontraron datos importantes
+                pokemonDataDiv.append(`<p>No se encontraron datos importantes del Pokémon ${valor}. Puede ser un Digimon.</p>`);
+            }
+        }
+
+        function mostrarMensajeNoEncontrado(valor) {
+            // Ocultar gif de carga
+            $('#loadingContainer').hide();
+
+            // Mostrar formularios y resultados
+            $('#pokemonForm, #tipoForm, #pokemonData').show();
+            
+            const pokemonDataDiv = $('#pokemonData');
+            pokemonDataDiv.empty(); // Limpiar contenido anterior
+            pokemonDataDiv.append(`<p>No se encontró el Pokémon ${valor}. Puede ser un Digimon.</p>`);
+        }
+    });
+</script>  
+</body>
+</html>

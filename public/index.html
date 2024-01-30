@@ -132,17 +132,16 @@ button[type="submit"], button[type="button"] {
         <img id="loadingSpinner" src="https://media.tenor.com/fSsxftCb8w0AAAAi/pikachu-running.gif" alt="Cargando...">
     </div>
 
-    <form id="pokemonForm">
+    /*<form id="pokemonForm">
         <label for="pokemonInput">Buscar por nombre o número:</label>
         <input type="text" id="pokemonInput" name="pokemonInput">
         <button type="submit">Buscar</button>
     </form>
-
-     <!-- Formulario para buscar por tipo -->
+    <!--
+      Formulario para buscar por tipo
      <form id="tipoForm">
         <label>Selecciona un tipo:</label>
         <div>
-            <!-- Botones de opción para cada tipo -->
             <input type="radio" id="tipoNormal" name="tipo" value="normal">
             <label for="tipoNormal">Normal</label>
 
@@ -200,11 +199,11 @@ button[type="submit"], button[type="button"] {
             <button type="button" onclick="buscarPorTipo()">Buscar por Tipo</button>
         </div>
     </form>
-
+    -->
     <div id="pokemonData"></div>
 
     <script>
-
+        /*
         function buscarPorTipo() {
             // Obtener el tipo seleccionado
             const tipoSeleccionado = $('input[name="tipo"]:checked').val();
@@ -281,7 +280,7 @@ button[type="submit"], button[type="button"] {
             pokemonDataDiv.empty(); // Limpiar contenido anterior
             pokemonDataDiv.append(`<p>${mensaje}</p>`);
         }
-    
+        */
 
     $(document).ready(function () {
         // Ocultar formularios y resultados al inicio

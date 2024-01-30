@@ -24,7 +24,9 @@ app.get('/', (req, res) => {
 
 async function obtenerDatosPokeAPIRecursivo(pagina, tamanoPagina, offset, acumulado = []) {
     try {
-        // Realizar la solicitud a la PokeAPI con paginación
+        const limite = 151; // Establecer el límite a los primeros 151 Pokémon
+
+        // Realizar la solicitud a la PokeAPI con paginación y límite
         const respuestaPokeAPI = await axios.get('https://pokeapi.co/api/v2/pokemon', {
             params: {
                 offset: offset,
@@ -52,15 +54,18 @@ async function obtenerDatosPokeAPIRecursivo(pagina, tamanoPagina, offset, acumul
         // Agregar los datos de la página actual al acumulado
         acumulado = acumulado.concat(datosCompletos);
 
-        // Verificar si hay más páginas
-        if (respuestaPokeAPI.data.next) {
+        // Verificar si hay más páginas y si el límite no se ha alcanzado
+        if (respuestaPokeAPI.data.next && acumulado.length < limite) {
             // Calcular el offset para la próxima página
             const proximoOffset = offset + tamanoPagina;
 
-            // Obtener los datos de la próxima página de manera recursiva
-            return obtenerDatosPokeAPIRecursivo(pagina + 1, tamanoPagina, proximoOffset, acumulado);
+            // Calcular el número de Pokémon restantes para alcanzar el límite
+            const restantesParaLimite = Math.min(limite - acumulado.length, tamanoPagina);
+
+            // Obtener los datos de la próxima página de manera recursiva con el nuevo límite
+            return obtenerDatosPokeAPIRecursivo(pagina + 1, restantesParaLimite, proximoOffset, acumulado);
         } else {
-            // Si no hay más páginas, devolver los datos acumulados
+            // Si no hay más páginas o se alcanzó el límite, devolver los datos acumulados
             return acumulado;
         }
     } catch (error) {

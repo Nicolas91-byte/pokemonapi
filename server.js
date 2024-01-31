@@ -102,22 +102,6 @@ app.get('/obtenerDatosPokemon', async (req, res) => {
     }
 });
 
-app.get('/obtenerTiposPokemon', async (req, res) => {
-    try {
-        // Realizar la solicitud a la PokeAPI para obtener la lista de tipos
-        const respuestaTipos = await axios.get('https://pokeapi.co/api/v2/type');
-        
-        // Extraer los nombres de los tipos desde la respuesta
-        const tipos = respuestaTipos.data.results.map(tipo => tipo.name);
-
-        // Envía la lista de tipos como respuesta JSON
-        res.json({ tipos });
-    } catch (error) {
-        console.error('Error al obtener tipos de Pokémon:', error.message);
-        res.status(500).json({ error: 'Error al obtener tipos de Pokémon' });
-    }
-});
-
 app.get('/obtenerPokemonPorTipo/:tipo', async (req, res) => {
     try {
         const tipoPokemon = req.params.tipo.toLowerCase(); // Obtener el tipo desde los parámetros de la ruta
